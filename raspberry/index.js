@@ -1,9 +1,15 @@
-
+// Create an app
 var Player = require('player');
+var server = require('diet');
+var app = server();
+app.listen('http://0.0.0.0:80');
+var player;
 
-var player = new Player("https://p.scdn.co/mp3-preview/6f1164ab51b257afed6247d10f804cc25bcd3c5c");
 
-player.play(function(err, player) {
-	console.log("end");
-	}
-	);
+app.get('/play', function ($) {
+    player = new Player($.params.link);
+    player.play();
+    $.end('playing');
+});
+
+function play(source) {}
