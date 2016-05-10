@@ -1,0 +1,14 @@
+{
+  "name": "alexa_soundcloud",
+  "version": "0.0.1",
+  "description": "play music from soundcloud",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "paszin",
+  "license": "ISC",
+  "dependencies": {
+    "player": "^0.6.1"
+  }
+}
