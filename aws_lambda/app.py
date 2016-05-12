@@ -22,9 +22,9 @@ def lambda_handler(event, context):
     prevent someone else from configuring a skill that sends requests to this
     function.
     """
-    # if (event['session']['application']['applicationId'] !=
-    #         "amzn1.echo-sdk-ams.app.[unique-value-here]"):
-    #     raise ValueError("Invalid Application ID")
+    if (event['session']['application']['applicationId'] !=
+             "amzn1.echo-sdk-ams.app.f2d582b0-58b6-440f-9951-50aceb0c9ad3"):
+         raise ValueError("Invalid Application ID")
 
     if event['session']['new']:
         on_session_started({'requestId': event['request']['requestId']},
@@ -64,12 +64,12 @@ def on_intent(intent_request, session):
 
     intent = intent_request['intent']
     intent_name = intent_request['intent']['name']
+    
+    mapping = {"PlayIntent": play, "StopIntent": stop, "VolumeIntent": volume, "InfoIntent": info, "NextIntent": nextf}
 
     # Dispatch to your skill's intent handlers
-    if intent_name == "PlayIntent":
-        return play()
-    elif intent_name == "WhatsMyColorIntent":
-        return get_color_from_session(intent, session)
+    if intent_name in mapping.keys():
+        return mapping[intent_name](intent, session)
     elif intent_name == "AMAZON.HelpIntent":
         return get_welcome_response()
     elif intent_name == "AMAZON.CancelIntent" or intent_name == "AMAZON.StopIntent":
@@ -80,7 +80,6 @@ def on_intent(intent_request, session):
 
 def on_session_ended(session_ended_request, session):
     """ Called when the user ends the session.
-
     Is not called when the skill returns should_end_session=true
     """
     print("on_session_ended requestId=" + session_ended_request['requestId'] +
@@ -91,10 +90,16 @@ def on_session_ended(session_ended_request, session):
 
 def play():
     
-    resp = urllib2.urlopen("http://paszin.zapto.org/play?url=https://p.scdn.co/mp3-preview/6f1164ab51b257afed6247d10f804cc25bcd3c5c").read()
+    if 'Source' in intent['slots']:
+        source = intent['slots']['Source']['value']
+
+    if source.lower() == "favorites":
+        urls = SoundcloudAPI().getFavorites()
+
+    resp = urllib2.urlopen("http://paszin.zapto.org/play?link=" + urls[0].stream_id).read()
     session_attributes = {}
     card_title = "Playing"
-    speech_output = resp;
+    speech_output = "Playing "
     # If the user either does not reply to the welcome message or says something
     # that is not understood, they will be prompted again with this text.
     reprompt_text = "Come on, say something!"
@@ -103,6 +108,18 @@ def play():
         card_title, speech_output, reprompt_text, should_end_session))
 
 
+def stop(intent, session):
+    pass
+
+def volume(intent, session):
+    pass
+
+def info(intent, session):
+    pass
+
+def nextf(intent, session):
+    pass
+
 def get_welcome_response():
     """ If we wanted to initialize the session to have some attributes we could
     add those here
@@ -110,13 +127,16 @@ def get_welcome_response():
 
     session_attributes = {}
     card_title = "Welcome"
-    speech_output = "Yo, say play to play music";
+    speech_output = "Yo, welcome to soundcloud";
     # If the user either does not reply to the welcome message or says something
     # that is not understood, they will be prompted again with this text.
-    reprompt_text = "COme on, say something!"
+    reprompt_text = "Come on, say something!"
     should_end_session = False
-    return build_response(session_attributes, build_speechlet_response(
+    response = build_response(session_attributes, build_speechlet_response(
         card_title, speech_output, reprompt_text, should_end_session))
+    print("response", response)
+    response["response"]["card"]["type"] = "LinkAccount"
+    return response
 
 
 def handle_session_end_request():
