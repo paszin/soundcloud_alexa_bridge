@@ -8,34 +8,37 @@ var player;
 
 app.header(function ($) {
     console.log($.header)
-    console.log("Header Host", $.header("Host"));
-    console.log("Header Authorization", $.header("Authorization"));
+    console.log("Header Host", $.header("host"));
+    console.log("Header Authorization", $.header("authorization"));
     //reject if not authorized
     //$.failure()
     $.return()
 });
 
 app.get('/play', function ($) {
-    player = new Player($.params.link);
+    console.log($.query.link);
+    player = new Player($.query.link);
     player.play();
     $.end('playing');
 });
 
 
 app.get('/stop', function ($) {
-        $.end('stop');
+    player.stop();
+    $.end('stop');
 });
 
 app.get('/volume', function ($) {
-        $.end('volume');
+    player.setVolume($.query.value);
+    $.end('volume');
 });
 
 app.get('/info', function ($) {
-        $.end('info');
+    $.end('info');
 });
 
 app.get('/next', function ($) {
-        $.end('next');
+    $.end('next');
 });
 
 
