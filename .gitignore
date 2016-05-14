@@ -35,3 +35,6 @@ node_modules
 
 # Python
 *.pyc
+
+#config
+SOUNDCLOUD_ALEXA_BRIDGE_CLIENT_ID

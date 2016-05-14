@@ -31,6 +31,14 @@ use alexa to control your music played from an external device
 
 
 
+#### Setup Server
+
+- go to `raspberry`
+- `npm install`
+- `sudo su` //port 80 requires sudo
+- `export SOUNDCLOUD_ALEXA_BRIDGE_CLIENT_ID=1a23b4c56` //replace with client id from four soundcloud app
+- `nodemon index.js`
+
 
 
 
