@@ -1,14 +1,42 @@
 """
-This sample demonstrates a simple skill built with the Amazon Alexa Skills Kit.
-The Intent Schema, Custom Slots, and Sample Utterances for this skill, as well
-as testing instructions are located at http://amzn.to/1LzFrj6
-
-For additional samples, visit the Alexa Skills Kit Getting Started guide at
-http://amzn.to/1LGWsLG
 """
 
 from __future__ import print_function
-import urllib2
+import json
+try:
+    import urllib.request as urllib2
+except ImportError:
+    import urllib2
+import os
+
+class SoundcloudAPI:
+    baseUrl = "https://api.soundcloud.com"
+    #"http://paszin.zapto.org/
+
+    def __init__(self, token):
+        self.token = token
+
+    def getMe(self):
+        pass
+
+    def getFavorites(self):
+        """return a list with stream urls"""
+        url = self.baseUrl + "/me/favorites?oauth_token=" + self.token
+        print(url)
+        data = urllib2.urlopen(url).read()
+        favorites = json.loads(data)
+        print("Found ", len(favorites), "Tracks")
+        return favorites
+
+class Server:
+    def __init__(self):
+        self.baseUrl = "http://127.0.0.1"
+
+    def get(self, path, params):
+        queryParams = '&'.join([k+'='+v for k, v in params.items()])
+        return urllib2.urlopen(self.baseUrl + '/' + path + '?' + queryParams)
+
+#==============================================================================#
 
 def lambda_handler(event, context):
     """ Route the incoming request based on type (LaunchRequest, IntentRequest,
@@ -64,7 +92,7 @@ def on_intent(intent_request, session):
 
     intent = intent_request['intent']
     intent_name = intent_request['intent']['name']
-    
+
     mapping = {"PlayIntent": play, "StopIntent": stop, "VolumeIntent": volume, "InfoIntent": info, "NextIntent": nextf}
 
     # Dispatch to your skill's intent handlers
@@ -88,20 +116,30 @@ def on_session_ended(session_ended_request, session):
 
 # --------------- Functions that control the skill's behavior ------------------
 
-def play():
-    
+
+def play(intent, session):
+    token = getAccessToken(session)
+    sc = SoundcloudAPI(token)
+    source = getSlotValue(intent, "Source")
+
     if 'Source' in intent['slots']:
         source = intent['slots']['Source']['value']
+    else:
+        raise ValueError("Missing Slot Source")
 
-    if source.lower() == "favorites":
-        urls = SoundcloudAPI().getFavorites()
+    if source == "favorites":
+        favs = sc.getFavorites()
+        urls = [f['stream_url'] for f in favs]
+    else:
+        raise ValueError("Can not handle source " + source)
 
-    resp = urllib2.urlopen("http://paszin.zapto.org/play?link=" + urls[0].stream_id).read()
+    server = Server()
+    resp = server.get('play',{'links': ','.join(urls)})
+    print(resp)
+    print(resp.read())
     session_attributes = {}
     card_title = "Playing"
     speech_output = "Playing "
-    # If the user either does not reply to the welcome message or says something
-    # that is not understood, they will be prompted again with this text.
     reprompt_text = "Come on, say something!"
     should_end_session = False
     return build_response(session_attributes, build_speechlet_response(
@@ -202,6 +240,22 @@ def get_color_from_session(intent, session):
 
 # --------------- Helpers that build all of the responses ----------------------
 
+def getAccessToken(session):
+    token = None
+    if session.has_key("user") and session["user"].has_key("accessToken"):
+        token = session["user"]["accessToken"]
+    if not token:
+        token = os.environ.get("accessToken")
+        print("Take access Token from Enviroment")
+    if not token:
+        raise ValueError("missing access token")
+    return token
+
+def getSlotValue(intent, name):
+    if name in intent['slots']:
+        return intent['slots'][name]['value'].lower()
+    else:
+        raise ValueError("Missing Slot " + source)
 
 def build_speechlet_response(title, output, reprompt_text, should_end_session):
     return {
