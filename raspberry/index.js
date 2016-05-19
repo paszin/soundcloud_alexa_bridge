@@ -4,7 +4,8 @@ var server = require('diet');
 var app = server();
 app.listen('http://0.0.0.0:80');
 var player;
-
+var client_id = process.env["SOUNDCLOUD_ALEXA_BRIDGE_CLIENT_ID"];
+if (!client_id) {throw "Missing Client id in enviroment. To fix this run export SOUNDCLOUD_ALEXA_BRIDGE_CLIENT_ID=1-wdwd-3434-fdf"}
 
 app.header(function ($) {
     console.log($.header)
@@ -16,15 +17,22 @@ app.header(function ($) {
 });
 
 app.get('/play', function ($) {
-    console.log($.query.link);
-    player = new Player($.query.link);
-    player.play();
-    $.end('playing');
+    var links = $.query.links.split(",");
+    links = links.map((url) => url + "?client_id=" + client_id);
+    console.log("links:", links);
+    if (!!player) {
+        links.forEach((link) => player.add(link));
+        $.end('added to player');
+    } else {
+        player = new Player(links);
+        player.play();
+        $.end('new player');
+    }
 });
 
 
 app.get('/stop', function ($) {
-    player.stop();
+    player.pause();
     $.end('stop');
 });
 
@@ -38,6 +46,7 @@ app.get('/info', function ($) {
 });
 
 app.get('/next', function ($) {
+    player.next();
     $.end('next');
 });
 

@@ -11,5 +11,8 @@
   "dependencies": {
     "diet": "^0.10.5",
     "player": "^0.6.1"
+  },
+  "devDependencies": {
+    "request": "^2.72.0"
   }
 }
