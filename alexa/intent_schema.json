@@ -1,0 +1,23 @@
+{
+  "intents": [
+    {
+      "intent": "PlayIntent",
+      "slots" : [{
+          "name": "Source",
+          "type": "LIST_OF_SOURCES"
+        }]
+    }, {
+      "intent": "StopIntent",
+      "slots" : []
+    }, {
+      "intent": "VolumeIntent",
+      "slots" : [ { "name": "Change", "type": "VOLUME_CHANGE_OPTIONS"}]
+    }, {
+      "intent": "InfoIntent",
+      "slots" : []
+    }, {
+      "intent": "NextIntent",
+      "slots" : []
+    }
+  ]
+}

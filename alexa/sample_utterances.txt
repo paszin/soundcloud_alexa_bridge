@@ -1,0 +1,6 @@
+PlayIntent play from {Source}
+StopIntent stop
+NextIntent skip
+NextIntent next
+InfoIntent What is the name of the track
+VolumeIntent Volume {Change}
