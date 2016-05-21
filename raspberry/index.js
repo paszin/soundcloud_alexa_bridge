@@ -69,7 +69,7 @@ app.get('/info', function ($) {
 });
 
 app.get('/next', function ($) {
-    if (player.current_track_index >= player.list.length) {
+    if (player.current_track_index >= player.list.length - 1) {
         $.end('no more tracks');
     }
     player.next();
@@ -78,7 +78,7 @@ app.get('/next', function ($) {
 });
 
 app.get('/playlist', function($) {
-    $.end(player.list)
+    $.json({'current_track_id': player.current_track_index, 'playlist': player.list})
 })
 
 function play(source) {}
