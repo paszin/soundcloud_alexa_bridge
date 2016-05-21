@@ -29,12 +29,13 @@ class SoundcloudAPI:
         return favorites
 
 class Server:
-    def __init__(self):
-        self.baseUrl = "http://127.0.0.1"
-
-    def get(self, path, params):
+    
+    @classmethod
+    def get(self, path, params={}):
+        baseUrl = "http://paszin.zapto.org"
+        #baseUrl = "http://127.0.0.1"
         queryParams = '&'.join([k+'='+v for k, v in params.items()])
-        return urllib2.urlopen(self.baseUrl + '/' + path + '?' + queryParams)
+        return urllib2.urlopen(baseUrl + '/' + path + '?' + queryParams)
 
 #==============================================================================#
 
@@ -42,14 +43,7 @@ def lambda_handler(event, context):
     """ Route the incoming request based on type (LaunchRequest, IntentRequest,
     etc.) The JSON body of the request is provided in the event parameter.
     """
-    print("event.session.application.applicationId=" +
-          event['session']['application']['applicationId'])
-
-    """
-    Uncomment this if statement and populate with your skill's application ID to
-    prevent someone else from configuring a skill that sends requests to this
-    function.
-    """
+    
     if (event['session']['application']['applicationId'] !=
              "amzn1.echo-sdk-ams.app.f2d582b0-58b6-440f-9951-50aceb0c9ad3"):
          raise ValueError("Invalid Application ID")
@@ -87,9 +81,7 @@ def on_launch(launch_request, session):
 def on_intent(intent_request, session):
     """ Called when the user specifies an intent for this skill """
 
-    print("on_intent requestId=" + intent_request['requestId'] +
-          ", sessionId=" + session['sessionId'])
-
+    
     intent = intent_request['intent']
     intent_name = intent_request['intent']['name']
 
@@ -133,30 +125,66 @@ def play(intent, session):
     else:
         raise ValueError("Can not handle source " + source)
 
-    server = Server()
-    resp = server.get('play',{'links': ','.join(urls)})
+    resp = Server.get('play',{'links': ','.join(urls)})
     print(resp)
     print(resp.read())
     session_attributes = {}
     card_title = "Playing"
     speech_output = "Playing "
-    reprompt_text = "Come on, say something!"
+    reprompt_text = ""
     should_end_session = False
     return build_response(session_attributes, build_speechlet_response(
         card_title, speech_output, reprompt_text, should_end_session))
 
 
 def stop(intent, session):
-    pass
+    Server.get('stop');
+    session_attributes = {}
+    card_title = "Playing stop"
+    speech_output = "ok"
+    reprompt_text = ""
+    should_end_session = False
+    return build_response(session_attributes, build_speechlet_response(
+        card_title, speech_output, reprompt_text, should_end_session))
+
 
 def volume(intent, session):
-    pass
+    change = getSlotValue(intent, 'Change')
+    Server.get('volume', {'value': 1})
+    session_attributes = {}
+    card_title = "volume"
+    speech_output = ""
+    reprompt_text = ""
+    should_end_session = False
+    return build_response(session_attributes, build_speechlet_response(
+        card_title, speech_output, reprompt_text, should_end_session))
+
+
 
 def info(intent, session):
-    pass
+    print("ask for info")
+    data = Server.get('info').read()
+    print(data)
+    info = json.loads(data)
+    session_attributes = {}
+    card_title = "Playing " 
+    speech_output = "You are listening to " + info['title']
+    reprompt_text = ""
+    should_end_session = False
+    return build_response(session_attributes, build_speechlet_response(
+        card_title, speech_output, reprompt_text, should_end_session))
+
 
 def nextf(intent, session):
-    pass
+    Server.get('next')
+    session_attributes = {}
+    card_title = "Playing next"
+    speech_output = "ok"
+    reprompt_text = ""
+    should_end_session = False
+    return build_response(session_attributes, build_speechlet_response(
+        card_title, speech_output, reprompt_text, should_end_session))
+
 
 def get_welcome_response():
     """ If we wanted to initialize the session to have some attributes we could

@@ -42,6 +42,7 @@ app.get('/play', function ($) {
     console.log("links:", links);
     if (!!player) {
         links.forEach((link) => player.add(link));
+        player.play();
         $.end('added to player');
     } else {
         player = new Player(links);
