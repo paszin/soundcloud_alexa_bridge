@@ -58,8 +58,12 @@ app.get('/stop', function ($) {
 });
 
 app.get('/volume', function ($) {
-    player.setVolume($.query.value);
-    $.end('volume');
+    if ($.query.hasOwnProperty('value')) {
+        player.setVolume($.query.value);
+        $.end('volume');
+    } else {
+        $.json({value: 0.5});
+    }
 });
 
 app.get('/info', function ($) {
