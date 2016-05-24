@@ -33,7 +33,7 @@ app.header(function ($) {
 });
 
 app.get('/play', function ($) {
-    if (!!player && !$.query.hasOwnProperty('links')) {
+    if (!!player && !$.query.hasOwnProperty('links') && !player.isPlaying()) {
         player.play();
         return $.end('continue player');
     }
@@ -42,7 +42,9 @@ app.get('/play', function ($) {
     console.log("links:", links);
     if (!!player) {
         links.forEach((link) => player.add(link));
-        player.play();
+        if (!player.isPlaying) {
+            player.play();
+        } 
         $.end('added to player');
     } else {
         player = new Player(links);
@@ -50,12 +52,14 @@ app.get('/play', function ($) {
         player.current_track_index = 0;
         player.setVolume(0.5);
         player.volume = 0.5;
+        player.isPlaying = true;
         $.end('new player, playing ' + player.list[player.current_track_index]);
     }
 });
 
 app.get('/stop', function ($) {
     player.pause();
+    player.isPlaying = false
     $.end('stop');
 });
 
