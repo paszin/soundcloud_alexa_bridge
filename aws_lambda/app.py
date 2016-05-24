@@ -132,7 +132,7 @@ def play(intent, session):
     card_title = "Playing"
     speech_output = "Playing "
     reprompt_text = ""
-    should_end_session = False
+    should_end_session = True
     return build_response(session_attributes, build_speechlet_response(
         card_title, speech_output, reprompt_text, should_end_session))
 
@@ -143,7 +143,7 @@ def stop(intent, session):
     card_title = "Playing stop"
     speech_output = "ok"
     reprompt_text = ""
-    should_end_session = False
+    should_end_session = True
     return build_response(session_attributes, build_speechlet_response(
         card_title, speech_output, reprompt_text, should_end_session))
 
@@ -158,7 +158,7 @@ def volume(intent, session):
     card_title = "volume"
     speech_output = ""
     reprompt_text = ""
-    should_end_session = False
+    should_end_session = True
     return build_response(session_attributes, build_speechlet_response(
         card_title, speech_output, reprompt_text, should_end_session))
 
@@ -172,7 +172,7 @@ def info(intent, session):
     card_title = "Playing " 
     speech_output = "You are listening to " + info['title']
     reprompt_text = ""
-    should_end_session = False
+    should_end_session = True
     return build_response(session_attributes, build_speechlet_response(
         card_title, speech_output, reprompt_text, should_end_session))
 
@@ -183,7 +183,7 @@ def nextf(intent, session):
     card_title = "Playing next"
     speech_output = "ok"
     reprompt_text = ""
-    should_end_session = False
+    should_end_session = True
     return build_response(session_attributes, build_speechlet_response(
         card_title, speech_output, reprompt_text, should_end_session))
 
