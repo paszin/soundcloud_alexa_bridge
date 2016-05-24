@@ -174,10 +174,10 @@ def get_welcome_response():
 
     session_attributes = {}
     speech_output = "Yo, welcome to soundcloud";
-    reprompt_text = "Come on, say something!"
-    should_end_session = False
     response = build_response(session_attributes, build_speechlet_response(
-        speech_output, {'title': 'Welcome to Soundcloud', 'content': 'Please link your account'}, reprompt_text, should_end_session))
+        speech_output, 
+        card={'title': 'Welcome to Soundcloud', 'content': 'Please link your account'}, 
+        should_end_session=False))
     response["response"]["card"]["type"] = "LinkAccount"
     return response
 
@@ -220,7 +220,7 @@ def build_speechlet_response(speech='ok', card=None, reprompt_text=None, should_
         }
     if card:
         resp['card'] = {
-            'type': 'Simple',
+            'type': card.get('type') or 'Simple',
             'title': card['title'],
             'content': card['content']
         }
