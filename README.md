@@ -54,7 +54,7 @@ Folder: `alexa`
 - "Stop"
 - "Skip | Play next"
 - "What is the name of the Track?"
-- "Volume up, Volume down" (no custom skill invokation necessary since we are playing via bluetooth)
+- "Volume up, Volume down" (no custom skill invocation necessary since we are playing via bluetooth)
 
 
 ## Future Work

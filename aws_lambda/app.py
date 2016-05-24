@@ -32,7 +32,7 @@ class Server:
     
     @classmethod
     def get(self, path, params={}):
-        baseUrl = "http://paszin.zapto.org"
+        baseUrl = SERVER_PUBLIC_URL
         #baseUrl = "http://127.0.0.1"
         queryParams = '&'.join([k+'='+v for k, v in params.items()])
         return urllib2.urlopen(baseUrl + '/' + path + '?' + queryParams)
@@ -44,8 +44,7 @@ def lambda_handler(event, context):
     etc.) The JSON body of the request is provided in the event parameter.
     """
     
-    if (event['session']['application']['applicationId'] !=
-             "amzn1.echo-sdk-ams.app.f2d582b0-58b6-440f-9951-50aceb0c9ad3"):
+    if (event['session']['application']['applicationId'] != AMAZON_APPLICATION_ID):
          raise ValueError("Invalid Application ID")
 
     if event['session']['new']:
@@ -129,38 +128,20 @@ def play(intent, session):
     print(resp)
     print(resp.read())
     session_attributes = {}
-    card_title = "Playing"
-    speech_output = "Playing "
-    reprompt_text = ""
-    should_end_session = True
-    return build_response(session_attributes, build_speechlet_response(
-        card_title, speech_output, reprompt_text, should_end_session))
+    return build_response(session_attributes, build_speechlet_response())
 
 
 def stop(intent, session):
     Server.get('stop');
     session_attributes = {}
-    card_title = "Playing stop"
-    speech_output = "ok"
-    reprompt_text = ""
-    should_end_session = True
-    return build_response(session_attributes, build_speechlet_response(
-        card_title, speech_output, reprompt_text, should_end_session))
+    return build_response(session_attributes, build_speechlet_response())
 
 
 def volume(intent, session):
     change = getSlotValue(intent, 'Change')
-    if change in ['up', 'louder', 'higher']:
-        current_volume = Server.get('volume')
-
-    Server.get('volume', {'value': 1})
     session_attributes = {}
-    card_title = "volume"
-    speech_output = ""
-    reprompt_text = ""
-    should_end_session = True
-    return build_response(session_attributes, build_speechlet_response(
-        card_title, speech_output, reprompt_text, should_end_session))
+    speech_output = "This is not implemented. Please ask me without opening this skill"
+    return build_response(session_attributes, build_speechlet_response(speech_output))
 
 
 
@@ -169,23 +150,16 @@ def info(intent, session):
     print(data)
     info = json.loads(data)
     session_attributes = {}
-    card_title = "Playing " 
     speech_output = "You are listening to " + info['title']
-    reprompt_text = ""
-    should_end_session = True
+    card = {'title': "Soundcloud", content: speech_output}
     return build_response(session_attributes, build_speechlet_response(
-        card_title, speech_output, reprompt_text, should_end_session))
+        speech_output, card=card))
 
 
 def nextf(intent, session):
     Server.get('next')
     session_attributes = {}
-    card_title = "Playing next"
-    speech_output = "ok"
-    reprompt_text = ""
-    should_end_session = True
-    return build_response(session_attributes, build_speechlet_response(
-        card_title, speech_output, reprompt_text, should_end_session))
+    return build_response(session_attributes, build_speechlet_response())
 
 
 def get_welcome_response():
@@ -216,58 +190,6 @@ def handle_session_end_request():
         card_title, speech_output, None, should_end_session))
 
 
-def set_color_in_session(intent, session):
-    """ Sets the color in the session and prepares the speech to reply to the
-    user.
-    """
-
-    card_title = intent['name']
-    session_attributes = {}
-    should_end_session = False
-
-    if 'Color' in intent['slots']:
-        favorite_color = intent['slots']['Color']['value']
-        session_attributes = create_favorite_color_attributes(favorite_color)
-        speech_output = "I now know your favorite color is " + \
-                        favorite_color + \
-                        ". You can ask me your favorite color by saying, " \
-                        "what's my favorite color?"
-        reprompt_text = "You can ask me your favorite color by saying, " \
-                        "what's my favorite color?"
-    else:
-        speech_output = "I'm not sure what your favorite color is. " \
-                        "Please try again."
-        reprompt_text = "I'm not sure what your favorite color is. " \
-                        "You can tell me your favorite color by saying, " \
-                        "my favorite color is red."
-    return build_response(session_attributes, build_speechlet_response(
-        card_title, speech_output, reprompt_text, should_end_session))
-
-
-def create_favorite_color_attributes(favorite_color):
-    return {"favoriteColor": favorite_color}
-
-
-def get_color_from_session(intent, session):
-    session_attributes = {}
-    reprompt_text = None
-
-    if "favoriteColor" in session.get('attributes', {}):
-        favorite_color = session['attributes']['favoriteColor']
-        speech_output = "Your favorite color is " + favorite_color + \
-                        ". Goodbye."
-        should_end_session = True
-    else:
-        speech_output = "I'm not sure what your favorite color is. " \
-                        "You can say, my favorite color is red."
-        should_end_session = False
-
-    # Setting reprompt_text to None signifies that we do not want to reprompt
-    # the user. If the user does not respond or says something that is not
-    # understood, the session will end.
-    return build_response(session_attributes, build_speechlet_response(
-        intent['name'], speech_output, reprompt_text, should_end_session))
-
 # --------------- Helpers that build all of the responses ----------------------
 
 def getAccessToken(session):
@@ -278,6 +200,9 @@ def getAccessToken(session):
         token = os.environ.get("accessToken")
         print("Take access Token from Enviroment")
     if not token:
+        token = SOUNDCLOUD_ACCESS_TOKEN
+        print("Take access Token from Code")
+    if not token:
         raise ValueError("missing access token")
     return token
 
@@ -287,25 +212,27 @@ def getSlotValue(intent, name):
     else:
         raise ValueError("Missing Slot " + source)
 
-def build_speechlet_response(title, output, reprompt_text, should_end_session):
-    return {
-        'outputSpeech': {
+def build_speechlet_response(speech='ok', card=None, reprompt_text=None, should_end_session=True):
+    resp = {}
+    if speech:
+        resp['outputSpeech'] = {
             'type': 'PlainText',
-            'text': output
-        },
-        'card': {
+            'text': speech
+        }
+    if card:
+        resp['card'] = {
             'type': 'Simple',
-            'title': 'SessionSpeechlet - ' + title,
-            'content': 'SessionSpeechlet - ' + output
-        },
-        'reprompt': {
+            'title': card['title'],
+            'content': card['content']
+        }
+    if reprompt_text:
+        resp['reprompt'] = {
             'outputSpeech': {
                 'type': 'PlainText',
                 'text': reprompt_text
             }
-        },
-        'shouldEndSession': should_end_session
-    }
+    resp.should_end_session = should_end_session
+    return resp
 
 
 def build_response(session_attributes, speechlet_response):
