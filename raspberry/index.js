@@ -48,6 +48,8 @@ app.get('/play', function ($) {
         player = new Player(links);
         player.play();
         player.current_track_index = 0;
+        player.setVolume(0.5);
+        player.volume = 0.5;
         $.end('new player, playing ' + player.list[player.current_track_index]);
     }
 });
@@ -60,9 +62,10 @@ app.get('/stop', function ($) {
 app.get('/volume', function ($) {
     if ($.query.hasOwnProperty('value')) {
         player.setVolume($.query.value);
+        player.volume = $.query.value;
         $.end('volume');
     } else {
-        $.json({value: 0.5});
+        $.json({value: player.volume});
     }
 });
 
@@ -85,5 +88,3 @@ app.get('/next', function ($) {
 app.get('/playlist', function($) {
     $.json({'current_track_id': player.current_track_index, 'playlist': player.list})
 })
-
-function play(source) {}

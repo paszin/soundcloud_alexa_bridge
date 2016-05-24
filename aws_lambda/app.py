@@ -150,6 +150,9 @@ def stop(intent, session):
 
 def volume(intent, session):
     change = getSlotValue(intent, 'Change')
+    if change in ['up', 'louder', 'higher']:
+        current_volume = Server.get('volume')
+
     Server.get('volume', {'value': 1})
     session_attributes = {}
     card_title = "volume"
@@ -162,7 +165,6 @@ def volume(intent, session):
 
 
 def info(intent, session):
-    print("ask for info")
     data = Server.get('info').read()
     print(data)
     info = json.loads(data)
