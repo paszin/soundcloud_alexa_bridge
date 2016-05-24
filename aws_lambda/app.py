@@ -9,6 +9,11 @@ except ImportError:
     import urllib2
 import os
 
+## Configuration
+SOUNDCLOUD_ACCESS_TOKEN = "your token"
+SERVER_PUBLIC_URL = "http://you.org"
+AMAZON_APPLICATION_ID = "amzn1.echo-sdk-ams.app.XXXXX"
+
 class SoundcloudAPI:
     baseUrl = "https://api.soundcloud.com"
     #"http://paszin.zapto.org/
