@@ -89,7 +89,7 @@ def on_intent(intent_request, session):
     intent = intent_request['intent']
     intent_name = intent_request['intent']['name']
 
-    mapping = {"PlayIntent": play, "StopIntent": stop, "VolumeIntent": volume, "InfoIntent": info, "NextIntent": nextf}
+    mapping = {"PlayIntent": play, "StopIntent": stop, "VolumeIntent": volume, "InfoIntent": info, "NextIntent": nextf, "ShuffleIntent": shuffle}
 
     # Dispatch to your skill's intent handlers
     if intent_name in mapping.keys():
@@ -166,7 +166,11 @@ def nextf(intent, session):
     session_attributes = {}
     return build_response(session_attributes, build_speechlet_response())
 
-
+def shuffle(intent, session):
+    Server.get('shuffle')
+    session_attributes = {}
+    return build_response(session_attributes, build_speechlet_response())
+    
 def get_welcome_response():
     """ If we wanted to initialize the session to have some attributes we could
     add those here

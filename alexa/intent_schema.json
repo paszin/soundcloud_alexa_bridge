@@ -18,6 +18,9 @@
     }, {
       "intent": "NextIntent",
       "slots" : []
+    }, {
+      "intent": "ShuffleIntent",
+      "slots": []
     }
   ]
 }
