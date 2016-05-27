@@ -89,6 +89,11 @@ app.get('/next', function ($) {
     $.end('next ' + player.list[player.current_track_index]);
 });
 
+app.get('/shuffle', function($) {
+    player.enable('shuffle')
+    $.end('ok');
+})
+
 app.get('/playlist', function($) {
     $.json({'current_track_id': player.current_track_index, 'playlist': player.list})
 })
