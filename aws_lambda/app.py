@@ -40,8 +40,10 @@ class Server:
         baseUrl = SERVER_PUBLIC_URL
         #baseUrl = "http://127.0.0.1"
         queryParams = '&'.join([k+'='+v for k, v in params.items()])
-        return urllib2.urlopen(baseUrl + '/' + path + '?' + queryParams)
-
+        #return urllib2.urlopen(baseUrl + '/' + path + '?' + queryParams)
+        opener = urllib2.build_opener()
+        opener.addheaders = [('Authorization', AUTHORIZATION_SECRET)]
+        return opener.open(baseUrl + '/' + path + '?' + queryParams)
 #==============================================================================#
 
 def lambda_handler(event, context):

@@ -7,6 +7,12 @@
           "type": "LIST_OF_SOURCES"
         }]
     }, {
+      "intent": "PlayIntent",
+      "slots" : [{
+          "name": "Source",
+          "type": "LIST_OF_SOURCES"
+        }]
+    }, {
       "intent": "StopIntent",
       "slots" : []
     }, {
