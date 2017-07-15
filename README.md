@@ -2,7 +2,7 @@
 Use alexa to control your music from soundcloud
 
 ## Introduction
-This is how a guide on how to write a custom skill that plays music on the amazon echo. Amazon Echo offers a few music services (like pandora or prime music or spotify), but unfortunately not soundcloud. Furthermore amazon does not allow to develop music application. The support to play mp3 files is very limited.
+This is a guide on how to write a custom skill that plays music on the amazon echo. Amazon Echo offers a few music services (like pandora or prime music or spotify), but unfortunately not soundcloud. Furthermore amazon does not allow to develop music application. The support to play mp3 files is very limited.
 So, here is the hack-around:
 
 ## Setup
