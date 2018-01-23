@@ -1,6 +1,22 @@
 # Soundcloud Integration for Alexa
 Use alexa to control your music from soundcloud
 
+***
+
+**Update 01/2018**
+
+The development environment around alexa has changed a lot.
+
+Since Amazon added audio player support, the described workaround here isn't necessary anymore.
+Therefore, I built a new skill, that supports soundcloud directly. Feel free to check it out.
+
+**https://github.com/paszin/alexa-soundcloud**
+
+
+***
+
+
+
 ## Introduction
 This is a guide on how to write a custom skill that plays music on the amazon echo. Amazon Echo offers a few music services (like pandora or prime music or spotify), but unfortunately not soundcloud. Furthermore amazon does not allow to develop music application. The support to play mp3 files is very limited.
 So, here is the hack-around:
